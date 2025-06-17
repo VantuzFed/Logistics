@@ -1,0 +1,170 @@
+/* Общие стили */
+body {
+    background-color: #F8FAFC;
+    color: #1F2937;
+    font-family: 'Inter', 'Poppins', sans-serif;
+    font-size: 16px; /* Базовый размер (Medium) */
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Шапка */
+header {
+    background-color: #1E3A8A;
+    padding: 1.5rem 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Заголовки */
+h1 {
+    color: #1F2937;
+    font-weight: 600;
+}
+
+/* Параграфы */
+p {
+    color: #4B5563;
+}
+
+/* Геройский блок */
+.hero-section {
+    background-color: #E2E8F0;
+    padding: 3rem 2rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+
+/* Секция услуг */
+.services-section {
+    padding: 2.5rem 1.5rem;
+    border-radius: 0.75rem;
+    background-color: #FFFFFF;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Секция отслеживания */
+.tracking-section {
+    background-color: #F1F5F9;
+    padding: 2.5rem 1.5rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Ссылки навигации */
+a.nav-link {
+    color: #FFFFFF;
+    transition: color 0.2s ease;
+}
+
+a.nav-link:hover {
+    color: #3B82F6;
+}
+
+/* Ссылки с курсором */
+.link {
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.link:hover {
+    color: #3B82F6;
+}
+
+/* Скрытые элементы */
+.hidden {
+    visibility: hidden;
+}
+
+/* Темная тема */
+.dark-theme {
+    background-color: #0F172A;
+    color: #F1F5F9;
+}
+
+/* Темный геройский блок */
+.dark-hero-section {
+    background-color: #334155;
+}
+
+/* Модальное окно в темной теме */
+.dark-modal-content {
+    background-color: #1E293B;
+    border: 1px solid #475569;
+    color: #F1F5F9;
+}
+
+.dark-modal-header,
+.dark-modal-footer {
+    border-color: #475569 !important;
+    background-color: #1E293B !important;
+}
+
+.dark-modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.8) !important;
+}
+
+/* Метки статуса */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    margin: 4px;
+    border-radius: 8px;
+    color: #FFFFFF;
+    background: linear-gradient(135deg, #3B82F6, #1E3A8A);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.status-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.status-badge input[type="text"] {
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #FFFFFF;
+    margin-right: 8px;
+    font-size: 0.9rem;
+}
+
+/* Настройки размера шрифта */
+.font-small {
+    font-size: 14px;
+}
+
+.font-medium {
+    font-size: 16px;
+}
+
+.font-large {
+    font-size: 18px;
+}
+
+/* Кнопки */
+.btn-primary {
+    background-color: #3B82F6;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-primary:hover {
+    background-color: #1D4ED8;
+    transform: translateY(-2px);
+}
+
+.btn-success {
+    background-color: #10B981;
+    border: none;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-success:hover {
+    background-color: #059669;
+    transform: translateY(-2px);
+}
