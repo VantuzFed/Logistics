@@ -1,11 +1,10 @@
 # Задание на учебную практику: разработать веб-приложение для
 # автоматизации безнес-процессов логистической компании
 # Среда разработки: PyCharm
-# Учебная практика ПП.02 ПМ.02 Осуществление интеграции программных
-# модулей
+# Учебная практика
 # Название: Разработка веб-приложения
-# Разработал: Федюнин Иван Владиславович ТБД-62
-# Дата: 05.06.2025
+# Разработал: Федюнин Иван Владиславович ТБД-72
+# Дата: 17.11.2025
 # Язык: Python
 
 
@@ -16,11 +15,11 @@ import secrets
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import create_engine, func, or_, and_
 from sqlalchemy.orm import sessionmaker
-from models import Base, Users, Sessions, Clients, Drivers, Vehicles, Warehouses, Orders, Routes
+from models import Base, Users, Sessions, Clients, Drivers, Vehicles, Warehouses, Orders, Routes, t_warehouses_orders
 
 app = Flask(__name__)
 
-engine = create_engine('mysql+pymysql://root:35678@127.0.0.1/logistics', echo=False)
+engine = create_engine('postgresql://admin:1234@192.168.57.6:5432/logistics', echo=False)
 DB_Session = sessionmaker(bind=engine)
 
 class UserSession:
@@ -193,7 +192,8 @@ def clients_api_id(client_id):
         match request.method:
             case 'GET':
                 client = db.query(Clients).filter(Clients.id == client_id).first()
-                return jsonify({'id': client.id, 'first_name': client.first_name, 'last_name': client.last_name, 'e_mail': client.e_mail, 'phone_number': client.phone_number})
+                if client:
+                    return jsonify({'id': client.id, 'first_name': client.first_name, 'last_name': client.last_name, 'e_mail': client.e_mail, 'phone_number': client.phone_number})
             case 'PUT':
                 client = db.query(Clients).filter(Clients.id == client_id).first()
                 if client:
@@ -242,7 +242,8 @@ def drivers_api_id(driver_id):
         match request.method:
             case 'GET':
                 driver = db.query(Drivers).filter(Drivers.id == driver_id).first()
-                return jsonify({'id': driver.id, 'first_name': driver.first_name, 'last_name': driver.last_name, 'phone': driver.phone})
+                if driver:
+                    return jsonify({'id': driver.id, 'first_name': driver.first_name, 'last_name': driver.last_name, 'phone': driver.phone})
             case 'PUT':
                 driver = db.query(Drivers).filter(Drivers.id == driver_id).first()
                 if driver:
@@ -290,7 +291,8 @@ def vehicles_api_id(vehicle_id):
         match request.method:
             case 'GET':
                 vehicle = db.query(Vehicles).filter(Vehicles.id == vehicle_id).first()
-                return jsonify({'id': vehicle.id, 'plate_number': vehicle.plate_number,'model': vehicle.model, 'type': vehicle.type, 'capacity': vehicle.capacity})
+                if vehicle:
+                    return jsonify({'id': vehicle.id, 'plate_number': vehicle.plate_number,'model': vehicle.model, 'type': vehicle.type, 'capacity': vehicle.capacity})
             case 'PUT':
                 vehicle = db.query(Vehicles).filter(Vehicles.id == vehicle_id).first()
                 if vehicle:
@@ -339,7 +341,8 @@ def warehouses_api_id(warehouse_id):
         match request.method:
             case 'GET':
                 warehouse = db.query(Warehouses).filter(Warehouses.id == warehouse_id).first()
-                return jsonify({'id': warehouse.id, 'name': warehouse.name, 'address': warehouse.address, 'capacity': warehouse.capacity})
+                if warehouse:
+                    return jsonify({'id': warehouse.id, 'name': warehouse.name, 'address': warehouse.address, 'capacity': warehouse.capacity})
             case 'PUT':
                 warehouse = db.query(Warehouses).filter(Warehouses.id == warehouse_id).first()
                 if warehouse:
@@ -387,7 +390,8 @@ def orders_api_id(order_id):
         match request.method:
             case 'GET':
                 order = db.query(Orders).filter(Orders.id == order_id).first()
-                return jsonify({'id': order.id, 'client_id': order.client_id, 'order_date': order.order_date.isoformat(), 'status': order.status, 'user': order.user_id})
+                if order:
+                    return jsonify({'id': order.id, 'client_id': order.client_id, 'order_date': order.order_date.isoformat(), 'status': order.status, 'user': order.user_id})
             case 'PUT':
                 order = db.query(Orders).filter(Orders.id == order_id).first()
                 if order:
@@ -399,92 +403,104 @@ def orders_api_id(order_id):
                     return jsonify({'message': 'Order updated'})
         return jsonify({'error': 'Order not found'}), 404
 
+# make this
+@app.route('/api/warehouses_orders/<int:order_id>', methods=['GET', 'POST', 'DELETE'])
+def warehouses_orders_api_id(order_id):
+    session_user = UserSession()
+    if not session_user.user_id:
+        return jsonify({'error': 'Требуется авторизация'}), 401
 
-# @app.route('/api/warehouses_orders/<int:order_id>', methods=['GET', 'POST', 'DELETE'])
-# def warehouses_orders_api_id(order_id):
-#     session_user = UserSession()
-#     if not session_user.user_id:
-#         return jsonify({'error': 'Требуется авторизация'}), 401
-#
-#     with DB_Session() as db:
-#         match request.method:
-#             case 'GET':
-#                 # Получение списка складов для заказа
-#                 order = db.query(Orders).filter(Orders.id == order_id).first()
-#                 if not order:
-#                     return jsonify({'error': 'Заказ не найден'}), 404
-#                 return jsonify([
-#                     {
-#                         'id': w.id,
-#                         'name': w.name,
-#                         'address': w.address,
-#                         'capacity': w.capacity
-#                     } for w in order.Warehouses_
-#                 ])
-#
-#             case 'POST':
-#                 # Добавление склада к заказу
-#                 data = request.json
-#                 warehouse_id = data.get('warehouse_id')
-#                 if not warehouse_id:
-#                     return jsonify({'error': 'Требуется ID склада'}), 400
-#
-#                 order = db.query(Orders).filter(Orders.id == order_id).first()
-#                 warehouse = db.query(Warehouses).filter(Warehouses.id == warehouse_id).first()
-#
-#                 if not order or not warehouse:
-#                     return jsonify({'error': 'Заказ или склад не найдены'}), 404
-#
-#                 # Проверка на существование связи
-#                 existing_relation = db.execute(
-#                     t_Warehouses_Orders.select().where(
-#                         t_Warehouses_Orders.c.Orders_id == order_id,
-#                         t_Warehouses_Orders.c.Warehouses_id == warehouse_id
-#                     )
-#                 ).first()
-#
-#                 if existing_relation:
-#                     return jsonify({'error': 'Связь уже существует'}), 400
-#
-#                 # Создание новой связи
-#                 db.execute(
-#                     t_Warehouses_Orders.insert().values(
-#                         Orders_id=order_id,
-#                         Warehouses_id=warehouse_id
-#                     )
-#                 )
-#                 db.commit()
-#                 return jsonify({'message': 'Warehouse added to order'}), 201
-#
-#             case 'DELETE':
-#                 # Удаление склада из заказа
-#                 data = request.json
-#                 warehouse_id = data.get('warehouse_id')
-#                 if not warehouse_id:
-#                     return jsonify({'error': 'Требуется ID склада'}), 400
-#
-#                 # Проверка на существование связи
-#                 relation = db.execute(
-#                     t_Warehouses_Orders.select().where(
-#                         t_Warehouses_Orders.c.Orders_id == order_id,
-#                         t_Warehouses_Orders.c.Warehouses_id == warehouse_id
-#                     )
-#                 ).first()
-#
-#                 if not relation:
-#                     return jsonify({'error': 'Связь не найдена'}), 404
-#
-#                 # Удаление связи
-#                 db.execute(
-#                     t_Warehouses_Orders.delete().where(
-#                         t_Warehouses_Orders.c.Orders_id == order_id,
-#                         t_Warehouses_Orders.c.Warehouses_id == warehouse_id
-#                     )
-#                 )
-#                 db.commit()
-#                 return jsonify({'message': 'Warehouse removed from order'})
-#
-#         return jsonify({'error': 'Метод не разрешен'}), 405
+    with DB_Session() as db:
+        match request.method:
+
+            # ----------------- GET -----------------
+            case 'GET':
+                order = db.query(Orders).filter(Orders.id == order_id).first()
+                if not order:
+                    return jsonify({'error': 'Заказ не найден'}), 404
+
+                warehouses = (
+                    db.query(Warehouses)
+                    .join(t_warehouses_orders, t_warehouses_orders.c.warehouses_id == Warehouses.id)
+                    .filter(t_warehouses_orders.c.orders_id == order_id)
+                    .all()
+                )
+
+                return jsonify([
+                    {
+                        'id': w.id,
+                        'name': w.name,
+                        'address': w.address,
+                        'capacity': w.capacity
+                    } for w in warehouses
+                ]), 200
+
+            # ----------------- POST -----------------
+            case 'POST':
+                data = request.get_json(silent=True) or {}
+                warehouse_id = data.get('warehouse_id')
+                if not warehouse_id:
+                    return jsonify({'error': 'Требуется ID склада'}), 400
+
+                order = db.query(Orders).filter(Orders.id == order_id).first()
+                warehouse = db.query(Warehouses).filter(Warehouses.id == warehouse_id).first()
+
+                if not order:
+                    return jsonify({'error': 'Заказ не найден'}), 404
+                if not warehouse:
+                    return jsonify({'error': 'Склад не найден'}), 404
+
+                # Проверка на существующую связь
+                existing_relation = db.execute(
+                    t_warehouses_orders.select().where(
+                        t_warehouses_orders.c.orders_id == order_id,
+                        t_warehouses_orders.c.warehouses_id == warehouse_id
+                    )
+                ).first()
+
+                if existing_relation:
+                    return jsonify({'error': 'Связь уже существует'}), 400
+
+                # Создание связи
+                db.execute(
+                    t_warehouses_orders.insert().values(
+                        orders_id=order_id,
+                        warehouses_id=warehouse_id
+                    )
+                )
+                db.commit()
+                return jsonify({'message': 'Склад добавлен к заказу'}), 201
+
+            # ----------------- DELETE -----------------
+            case 'DELETE':
+                data = request.get_json(silent=True) or {}
+                warehouse_id = data.get('warehouse_id')
+                if not warehouse_id:
+                    return jsonify({'error': 'Требуется ID склада'}), 400
+
+                # Проверка существования связи
+                relation = db.execute(
+                    t_warehouses_orders.select().where(
+                        t_warehouses_orders.c.orders_id == order_id,
+                        t_warehouses_orders.c.warehouses_id == warehouse_id
+                    )
+                ).first()
+
+                if not relation:
+                    return jsonify({'error': 'Связь не найдена'}), 404
+
+                # Удаление связи
+                db.execute(
+                    t_warehouses_orders.delete().where(
+                        t_warehouses_orders.c.orders_id == order_id,
+                        t_warehouses_orders.c.warehouses_id == warehouse_id
+                    )
+                )
+                db.commit()
+                return jsonify({'message': 'Склад удалён из заказа'}), 200
+
+        return jsonify({'error': 'Метод не разрешен'}), 405
+
 @app.route('/api/routes', methods=['GET', 'POST', 'DELETE'])
 def routes_api():
     session_user = UserSession()
@@ -521,7 +537,8 @@ def routes_api_id(route_id):
         match request.method:
             case 'GET':
                 route = db.query(Routes).filter(Routes.id == route_id).first()
-                return jsonify({'id': route.id, 'order_id': route.order_id, 'vehicle_id': route.vehicle_id, 'driver_id': route.driver_id, 'departure_date': route.departure_date, 'arrival_date': route.arrival_date})
+                if route:
+                    return jsonify({'id': route.id, 'order_id': route.order_id, 'vehicle_id': route.vehicle_id, 'driver_id': route.driver_id, 'departure_date': route.departure_date, 'arrival_date': route.arrival_date})
             case 'PUT':
                 route = db.query(Routes).filter(Routes.id == route_id).first()
                 if route:
@@ -582,7 +599,7 @@ def admin_users_api_id(users_id):
                         return jsonify({'success': False, 'message': 'Пользователь не найден или попытка удалить текущего пользователя'})
     else:
         return jsonify({'error': 'Требуется вход или права администратора'})
-    return jsonify({'errors': 'unknown error'}), 400
+
 
 if __name__ == '__main__':
     Base.metadata.create_all(engine)

@@ -1,56 +1,58 @@
 {% extends "base.html" %}
 
+{% block title %}Админ-панель | LogiTrans{% endblock %}
 
 {% block content %}
-    <div class="jumbotron">
-        <h2 class="display-4">Админ-панель</h2>
-        <hr class="my-4">
-        <div class="container mt-4">
-    <div class="container admin-content bg-white">
+<div class="card">
+  <h2 class="card-header">Админ-панель</h2>
+  <div class="card-body">
     <ul class="nav nav-tabs" id="TabList" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="stats" data-bs-toggle="tab" data-bs-target="#stats-content" type="button" role="tab">Статистика</button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="user-management" data-bs-toggle="tab" data-bs-target="#user-management-content" type="button" role="tab">Управление пользователями</button>
-        </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="stats" data-bs-toggle="tab" data-bs-target="#stats-content" type="button" role="tab">Статистика</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="user-management" data-bs-toggle="tab" data-bs-target="#user-management-content" type="button" role="tab">Управление пользователями</button>
+      </li>
     </ul>
 
     <div class="tab-content mt-3" id="TabContent">
-        <div class="tab-pane fade show active" id="stats-content" role="tabpanel">
-            <div class="d-flex flex-row-reverse mt-2">
-            <button type="button" class="btn btn-primary" onclick="renderStats()">⟳</button>
-            </div>
-            <div id="stats-block"></div>
+      <div class="tab-pane fade show active" id="stats-content" role="tabpanel">
+        <div class="d-flex justify-content-end mb-3">
+          <button type="button" class="btn btn-primary" onclick="renderStats()">Обновить</button>
         </div>
-        <div class="tab-pane fade" id="user-management-content" role="tabpanel">
-            <table class="table">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">Логин</th>
-      <th scope="col">E-mail</th>
-      <th scope="col">Тип аккаунта</th>
-      <th scope="col">Сброс</th>
-      <th scope="col">Изменение прав</th>
-      <th scope="col">Удаление</th>
-    </tr>
-  </thead>
-  <tbody id="manage-block">
-  </tbody>
-</table>
+        <div id="stats-block" class="p-3 bg-light rounded"></div> <!-- Улучшение: bg-light для контраста -->
+      </div>
+      <div class="tab-pane fade" id="user-management-content" role="tabpanel">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Логин</th>
+                <th scope="col">E-mail</th>
+                <th scope="col">Тип аккаунта</th>
+                <th scope="col">Сброс</th>
+                <th scope="col">Изменение прав</th>
+                <th scope="col">Удаление</th>
+              </tr>
+            </thead>
+            <tbody id="manage-block"></tbody>
+          </table>
         </div>
-    </div>
-</div>
-    </div></div>
-<div class="modal fade" id="msgAdminModal" tabindex="-1" aria-labelledby="msgAdminModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-body">
-        <h4 id="response-modal" class="text-center"> </h4>
       </div>
     </div>
   </div>
 </div>
+
+<div class="modal fade" id="msgAdminModal" tabindex="-1" aria-labelledby="msgAdminModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h4 id="response-modal" class="text-center"></h4>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="{{ url_for('static', filename='admin.js') }}"></script>
 {% endblock %}

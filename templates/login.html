@@ -1,38 +1,37 @@
 {% extends "base.html" %}
 
+{% block title %}Вход | LogiTrans{% endblock %}
 
 {% block content %}
-    <div class="jumbotron">
-        <h1 class="display-4">Страница Входа</h1>
-        <hr class="my-4">
-
-
-<div class="form-signin w-100 m-auto">
-<form id="LogForm">
-    <div class="row">
-                <div class="form-group col-xs-6">
-                    <label for="email" class="form-label">E-mail:</label>
-                    <p><input type="email" id="email" class="form-control" required minlength="5" maxlength="32"></p>
-                </div>
-                <div class="form-group col-xs-6">
-                    <label for="password" class="form-label">Пароль:</label>
-                    <p><input type="password" id="password" class="form-control" required></p>
-                </div>
-        <p></p>
-    </div>
-<button class="btn btn-primary" id="sub-btn" type="submit">Войти</button>
-</form>
-    <p id="response-message" class="text-center"> </p>
+<div class="card mx-auto" style="max-width: 500px;">
+  <h2 class="card-header">Вход</h2>
+  <div class="card-body">
+    <form id="LogForm">
+      <div class="row g-3">
+        <div class="col-12">
+          <label for="email" class="form-label">E-mail</label>
+          <input type="email" id="email" class="form-control" required minlength="5" maxlength="32" placeholder="example@email.com">
+        </div>
+        <div class="col-12">
+          <label for="password" class="form-label">Пароль</label>
+          <input type="password" id="password" class="form-control" required minlength="4" maxlength="16" placeholder="Введите пароль">
+        </div>
+      </div>
+      <button class="btn btn-primary w-100 mt-4" id="sub-btn" type="submit">Войти</button>
+    </form>
+    <p id="response-message" class="text-center mt-3 text-muted"></p>
+  </div>
 </div>
+
 <div class="modal fade" id="msgModal" tabindex="-1" aria-labelledby="msgModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-body">
-        <h4 id="response-modal" class="text-center"> </h4>
+        <h4 id="response-modal" class="text-center"></h4>
       </div>
     </div>
   </div>
 </div>
-         </div>
+
 <script src="{{ url_for('static', filename='login.js') }}"></script>
 {% endblock %}

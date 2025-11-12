@@ -144,8 +144,8 @@
         });
         const actionCell = document.createElement('td');
         actionCell.innerHTML = `
-          <button class="btn btn-warning edit-btn" data-bs-toggle="modal" data-bs-target="#universalModal" data-table="${table}" data-id="${item.id}">Редактировать</button>
-          <button class="btn btn-danger delete-btn" onclick="deleteEntry('${table}', ${item.id})">Удалить</button>
+          <button class="btn btn-warning edit-btn" data-bs-toggle="modal" data-bs-target="#universalModal" data-table="${table}" data-id="${item.id}">🖉</button>
+          <button class="btn btn-danger delete-btn" onclick="deleteEntry('${table}', ${item.id})">🗑</button>
         `;
         row.appendChild(actionCell);
         tbody.appendChild(row);
