@@ -19,7 +19,7 @@ from models import Base, Users, Sessions, Clients, Drivers, Vehicles, Warehouses
 
 app = Flask(__name__)
 
-engine = create_engine('postgresql://admin:1234@192.168.57.6:5432/logistics', echo=False)
+engine = create_engine('postgresql://admin:1234@192.168.57.7:5432/logistics', echo=False)
 DB_Session = sessionmaker(bind=engine)
 
 class UserSession:
@@ -204,9 +204,10 @@ def clients_api_id(client_id):
                     client.phone_number = data.get('phone_number', client.phone_number)
                     db.commit()
                     return jsonify({'message': 'Client updated'})
+
         return jsonify({'error': 'Client not found'}), 404
 
-@app.route('/api/drivers', methods=['GET', 'POST', 'DELETE'])
+@app.route('/api/drivers', methods=['GET', 'POST'])
 def drivers_api():
     session_user = UserSession()
     if not session_user.user_id:
@@ -223,16 +224,9 @@ def drivers_api():
                 db.add(new_driver)
                 db.commit()
                 return jsonify({'message': 'Driver added', 'id': new_driver.id})
-            case 'DELETE':
-                driver_id = request.args.get('id')
-                driver = db.query(Drivers).filter(Drivers.id == driver_id).first()
-                if driver:
-                    db.delete(driver)
-                    db.commit()
-                    return jsonify({'message': 'Driver deleted'})
-                return jsonify({'error': 'Driver not found'}), 404
+        return jsonify({'error': 'Driver not found'}), 404
 
-@app.route('/api/drivers/<int:driver_id>', methods=['GET', 'PUT'])
+@app.route('/api/drivers/<int:driver_id>', methods=['GET', 'PUT', 'DELETE'])
 def drivers_api_id(driver_id):
     session_user = UserSession()
     if not session_user.user_id:
@@ -253,9 +247,15 @@ def drivers_api_id(driver_id):
                     driver.phone = data.get('phone', driver.phone)
                     db.commit()
                     return jsonify({'message': 'Driver updated'})
+            case 'DELETE':
+                driver = db.query(Drivers).filter(Drivers.id == driver_id).first()
+                if driver:
+                    db.delete(driver)
+                    db.commit()
+                    return jsonify({'message': 'Driver deleted'})
         return jsonify({'error': 'Driver not found'}), 404
 
-@app.route('/api/vehicles', methods=['GET', 'POST', 'DELETE'])
+@app.route('/api/vehicles', methods=['GET', 'POST'])
 def vehicles_api():
     session_user = UserSession()
     if not session_user.user_id:
@@ -272,16 +272,9 @@ def vehicles_api():
                 db.add(new_vehicle)
                 db.commit()
                 return jsonify({'message': 'Vehicle added', 'id': new_vehicle.id})
-            case 'DELETE':
-                vehicle_id = request.args.get('id')
-                vehicle = db.query(Vehicles).filter(Vehicles.id == vehicle_id).first()
-                if vehicle:
-                    db.delete(vehicle)
-                    db.commit()
-                    return jsonify({'message': 'Vehicle deleted'})
-                return jsonify({'error': 'Vehicle not found'}), 404
+        return jsonify({'error': 'Vehicle not found'}), 404
 
-@app.route('/api/vehicles/<int:vehicle_id>', methods=['GET', 'PUT'])
+@app.route('/api/vehicles/<int:vehicle_id>', methods=['GET', 'PUT', 'DELETE'])
 def vehicles_api_id(vehicle_id):
     session_user = UserSession()
     if not session_user.user_id:
@@ -303,9 +296,15 @@ def vehicles_api_id(vehicle_id):
                     vehicle.capacity = data.get('capacity', vehicle.capacity)
                     db.commit()
                     return jsonify({'message': 'Vehicle updated'})
+            case 'DELETE':
+                vehicle = db.query(Vehicles).filter(Vehicles.id == vehicle_id).first()
+                if vehicle:
+                    db.delete(vehicle)
+                    db.commit()
+                    return jsonify({'message': 'Vehicle deleted'})
         return jsonify({'error': 'Vehicle not found'}), 404
 
-@app.route('/api/warehouses', methods=['GET', 'POST', 'DELETE'])
+@app.route('/api/warehouses', methods=['GET', 'POST'])
 def warehouses_api():
     session_user = UserSession()
     if not session_user.user_id:
@@ -322,16 +321,9 @@ def warehouses_api():
                 db.add(new_warehouse)
                 db.commit()
                 return jsonify({'message': 'Warehouse added', 'id': new_warehouse.id})
-            case 'DELETE':
-                warehouse_id = request.args.get('id')
-                warehouse = db.query(Warehouses).filter(Warehouses.id == warehouse_id).first()
-                if warehouse:
-                    db.delete(warehouse)
-                    db.commit()
-                    return jsonify({'message': 'Warehouse deleted'})
-                return jsonify({'error': 'Warehouse not found'}), 404
+        return jsonify({'error': 'Warehouse not found'}), 404
 
-@app.route('/api/warehouses/<int:warehouse_id>', methods=['GET', 'PUT'])
+@app.route('/api/warehouses/<int:warehouse_id>', methods=['GET', 'PUT', 'DELETE'])
 def warehouses_api_id(warehouse_id):
     session_user = UserSession()
     if not session_user.user_id:
@@ -352,9 +344,16 @@ def warehouses_api_id(warehouse_id):
                     warehouse.capacity = data.get('capacity', warehouse.capacity)
                     db.commit()
                     return jsonify({'message': 'Warehouse updated'})
+            case 'DELETE':
+                warehouse_id = request.args.get('id')
+                warehouse = db.query(Warehouses).filter(Warehouses.id == warehouse_id).first()
+                if warehouse:
+                    db.delete(warehouse)
+                    db.commit()
+                    return jsonify({'message': 'Warehouse deleted'})
         return jsonify({'error': 'Warehouse not found'}), 404
 
-@app.route('/api/orders', methods=['GET', 'POST', 'DELETE'])
+@app.route('/api/orders', methods=['GET', 'POST'])
 def orders_api():
     session_user = UserSession()
     if not session_user.user_id:
@@ -371,16 +370,9 @@ def orders_api():
                 db.add(new_order)
                 db.commit()
                 return jsonify({'message': 'Order added', 'id': new_order.id})
-            case 'DELETE':
-                order_id = request.args.get('id')
-                order = db.query(Orders).filter(Orders.id == order_id).first()
-                if order:
-                    db.delete(order)
-                    db.commit()
-                    return jsonify({'message': 'Order deleted'})
-                return jsonify({'error': 'Order not found'}), 404
+        return jsonify({'error': 'Order not found'}), 404
 
-@app.route('/api/orders/<int:order_id>', methods=['GET', 'PUT'])
+@app.route('/api/orders/<int:order_id>', methods=['GET', 'PUT', 'DELETE'])
 def orders_api_id(order_id):
     session_user = UserSession()
     if not session_user.user_id:
@@ -401,6 +393,13 @@ def orders_api_id(order_id):
                     order.status = data.get('status', order.status)
                     db.commit()
                     return jsonify({'message': 'Order updated'})
+            case 'DELETE':
+                order_id = request.args.get('id')
+                order = db.query(Orders).filter(Orders.id == order_id).first()
+                if order:
+                    db.delete(order)
+                    db.commit()
+                    return jsonify({'message': 'Order deleted'})
         return jsonify({'error': 'Order not found'}), 404
 
 # make this
@@ -501,7 +500,7 @@ def warehouses_orders_api_id(order_id):
 
         return jsonify({'error': 'Метод не разрешен'}), 405
 
-@app.route('/api/routes', methods=['GET', 'POST', 'DELETE'])
+@app.route('/api/routes', methods=['GET', 'POST'])
 def routes_api():
     session_user = UserSession()
     if not session_user.user_id:
@@ -518,16 +517,9 @@ def routes_api():
                 db.add(new_route)
                 db.commit()
                 return jsonify({'message': 'Route added', 'id': new_route.id})
-            case 'DELETE':
-                route_id = request.args.get('id')
-                route = db.query(Routes).filter(Routes.id == route_id).first()
-                if route:
-                    db.delete(route)
-                    db.commit()
-                    return jsonify({'message': 'Route deleted'})
-                return jsonify({'error': 'Route not found'}), 404
+        return jsonify({'error': 'Route not found'}), 404
 
-@app.route('/api/routes/<int:route_id>', methods=['GET', 'PUT'])
+@app.route('/api/routes/<int:route_id>', methods=['GET', 'PUT', 'DELETE'])
 def routes_api_id(route_id):
     session_user = UserSession()
     if not session_user.user_id:
@@ -550,6 +542,12 @@ def routes_api_id(route_id):
                     route.arrival_date = data.get('arrival_date', route.arrival_date)
                     db.commit()
                     return jsonify({'message': 'Route updated'})
+            case 'DELETE':
+                route = db.query(Routes).filter(Routes.id == route_id).first()
+                if route:
+                    db.delete(route)
+                    db.commit()
+                    return jsonify({'message': 'Route deleted'})
         return jsonify({'error': 'Route not found'}), 404
 
 @app.route('/api/admin/users', methods=['GET'])
