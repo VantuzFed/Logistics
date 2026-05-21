@@ -18,7 +18,7 @@ from models import Base, Users, Sessions, Clients, Drivers, Vehicles, Warehouses
 app = Flask(__name__)
 
 # Настройки подключения к PostgreSQL
-engine = create_engine('postgresql://admin:1234@192.168.57.7:5432/logistics', echo=False)
+engine = create_engine('postgresql://admin:1234@192.168.56.106:5432/logistics', echo=False)
 DB_Session = sessionmaker(bind=engine)
 
 
