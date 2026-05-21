@@ -7,10 +7,12 @@
 # Дата: 17.11.2025
 # Язык: Python
 
-
+import os
 import string
+import subprocess
+from datetime import datetime
 
-from flask import Flask, request, jsonify, make_response, redirect, url_for, render_template
+from flask import Flask, request, jsonify, make_response, redirect, url_for, render_template, send_file, abort, after_this_request
 import secrets
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import create_engine, func, or_, and_
@@ -19,7 +21,7 @@ from models import Base, Users, Sessions, Clients, Drivers, Vehicles, Warehouses
 
 app = Flask(__name__)
 
-engine = create_engine('postgresql://admin:1234@192.168.57.7:5432/logistics', echo=False)
+engine = create_engine('postgresql://admin:1234@192.168.56.103:5432/logistics', echo=False)
 DB_Session = sessionmaker(bind=engine)
 
 class UserSession:
@@ -597,6 +599,42 @@ def admin_users_api_id(users_id):
                         return jsonify({'success': False, 'message': 'Пользователь не найден или попытка удалить текущего пользователя'})
     else:
         return jsonify({'error': 'Требуется вход или права администратора'})
+
+
+@app.route('/api/admin/backup')
+def download_backup():
+    session_user = UserSession()
+    if session_user.login and session_user.acc_type == 'Admin':
+        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        temp_backup_path = f"/tmp/db_backup_{timestamp}.sql"
+
+        try:
+            env = os.environ.copy()
+            env["PGPASSWORD"] = "1234"
+            subprocess.run(
+                ["pg_dump", "-U", "admin", "-h", "192.168.56.103", "logistics", "-f", temp_backup_path],
+                env=env,
+                check=True
+            )
+
+            @after_this_request
+            def remove_file(response):
+                try:
+                    if os.path.exists(temp_backup_path):
+                        os.remove(temp_backup_path)
+                except Exception as error:
+                    app.logger.error(f"Error deleting temporary backup file: {error}")
+                return response
+
+            return send_file(
+                temp_backup_path,
+                as_attachment=True,
+                download_name=f"db_backup_{timestamp}.sql"
+            )
+
+        except subprocess.CalledProcessError:
+            abort(500, description="Database backup generation failed.")
+    return None
 
 
 if __name__ == '__main__':
