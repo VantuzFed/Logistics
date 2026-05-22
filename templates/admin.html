@@ -17,13 +17,12 @@
 
     <div class="tab-content mt-3" id="TabContent">
       <div class="tab-pane fade show active" id="stats-content" role="tabpanel">
+                        <div class="d-flex justify-content-end mb-3">
+                  <a href="/api/admin/backup" class="btn btn-primary" role="button">Скачать резервную копию БД</a>
+        </div>
         <div class="d-flex justify-content-end mb-3">
           <button type="button" class="btn btn-primary" onclick="renderStats()">Обновить</button>
         </div>
-                <div class="d-flex justify-content-end mb-3">
-                 <a href="/api/admin/backup">Скачать резервную копию БД</a>
-        </div>
-        <a href="/api/admin/backup">Скачать резервную копию БД</a>
         <div id="stats-block" class="p-3 bg-light rounded"></div> <!-- Улучшение: bg-light для контраста -->
       </div>
       <div class="tab-pane fade" id="user-management-content" role="tabpanel">

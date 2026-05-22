@@ -1,4 +1,5 @@
 // dashboard.js — ПОЛНЫЙ, с автообновлением всех таблиц
+// dashboard.js — ПОЛНЫЙ, с автообновлением всех таблиц
 
 const fieldConfigs = {
   drivers: [
@@ -356,12 +357,20 @@ async function addWarehouseToOrder() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ warehouse_id: warehouseId })
     });
+
+    // Переносим обработку ответа в json, чтобы прочитать сообщение об ошибке
+    const result = await response.json();
+
     if (response.ok) {
       fetchAssociatedWarehouses();
       refreshAllTables(); // Обновляем таблицы
+    } else {
+      // Если бэкенд вернул ошибку (например, "Склад переполнен"), показываем её текст
+      alert(result.error || 'Не удалось добавить склад к заказу');
     }
   } catch (err) {
     console.error('Ошибка:', err);
+    alert('Произошла сетевая ошибка при добавлении склада');
   }
 }
 

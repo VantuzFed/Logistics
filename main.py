@@ -451,7 +451,6 @@ def warehouses_orders_api_id(order_id):
                 if not warehouse:
                     return jsonify({'error': 'Склад не найден'}), 404
 
-                # Проверка на существующую связь
                 existing_relation = db.execute(
                     t_warehouses_orders.select().where(
                         t_warehouses_orders.c.orders_id == order_id,
@@ -462,14 +461,22 @@ def warehouses_orders_api_id(order_id):
                 if existing_relation:
                     return jsonify({'error': 'Связь уже существует'}), 400
 
-                # Создание связи
-                db.execute(
-                    t_warehouses_orders.insert().values(
-                        orders_id=order_id,
-                        warehouses_id=warehouse_id
+                try:
+                    db.execute(
+                        t_warehouses_orders.insert().values(
+                            orders_id=order_id,
+                            warehouses_id=warehouse_id
+                        )
                     )
-                )
-                db.commit()
+                    db.commit()
+                except Exception as e:
+                    db.rollback()
+
+                    if 'переполнен' in str(e):
+                        return jsonify({'error': f'Невозможно добавить заказ. Склад №{warehouse_id} переполнен.'}), 400
+
+                    return jsonify({'error': 'Внутренняя ошибка базы данных'}), 500
+
                 return jsonify({'message': 'Склад добавлен к заказу'}), 201
 
             # ----------------- DELETE -----------------
