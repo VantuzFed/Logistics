@@ -1,10 +1,10 @@
 # Задание на учебную практику: разработать веб-приложение для
 # автоматизации безнес-процессов логистической компании
 # Среда разработки: PyCharm
-# Учебная практика
+# Дипломный проект
 # Название: Разработка веб-приложения
-# Разработал: Федюнин Иван Владиславович ТБД-72
-# Дата: 17.11.2025
+# Разработал: Федюнин Иван Владиславович ТБД-82
+# Дата: 05.06.2026
 # Язык: Python
 
 import os
@@ -347,7 +347,6 @@ def warehouses_api_id(warehouse_id):
                     db.commit()
                     return jsonify({'message': 'Warehouse updated'})
             case 'DELETE':
-                warehouse_id = request.args.get('id')
                 warehouse = db.query(Warehouses).filter(Warehouses.id == warehouse_id).first()
                 if warehouse:
                     db.delete(warehouse)
@@ -404,7 +403,7 @@ def orders_api_id(order_id):
                     return jsonify({'message': 'Order deleted'})
         return jsonify({'error': 'Order not found'}), 404
 
-# make this
+
 @app.route('/api/warehouses_orders/<int:order_id>', methods=['GET', 'POST', 'DELETE'])
 def warehouses_orders_api_id(order_id):
     session_user = UserSession()
@@ -413,8 +412,6 @@ def warehouses_orders_api_id(order_id):
 
     with DB_Session() as db:
         match request.method:
-
-            # ----------------- GET -----------------
             case 'GET':
                 order = db.query(Orders).filter(Orders.id == order_id).first()
                 if not order:
@@ -435,8 +432,6 @@ def warehouses_orders_api_id(order_id):
                         'capacity': w.capacity
                     } for w in warehouses
                 ]), 200
-
-            # ----------------- POST -----------------
             case 'POST':
                 data = request.get_json(silent=True) or {}
                 warehouse_id = data.get('warehouse_id')
@@ -478,15 +473,11 @@ def warehouses_orders_api_id(order_id):
                     return jsonify({'error': 'Внутренняя ошибка базы данных'}), 500
 
                 return jsonify({'message': 'Склад добавлен к заказу'}), 201
-
-            # ----------------- DELETE -----------------
             case 'DELETE':
                 data = request.get_json(silent=True) or {}
                 warehouse_id = data.get('warehouse_id')
                 if not warehouse_id:
                     return jsonify({'error': 'Требуется ID склада'}), 400
-
-                # Проверка существования связи
                 relation = db.execute(
                     t_warehouses_orders.select().where(
                         t_warehouses_orders.c.orders_id == order_id,
@@ -496,8 +487,6 @@ def warehouses_orders_api_id(order_id):
 
                 if not relation:
                     return jsonify({'error': 'Связь не найдена'}), 404
-
-                # Удаление связи
                 db.execute(
                     t_warehouses_orders.delete().where(
                         t_warehouses_orders.c.orders_id == order_id,
@@ -564,7 +553,7 @@ def admin_users_api():
     session_user = UserSession()
     if session_user.login and session_user.acc_type == 'Admin':
         with DB_Session() as db:
-            users = db.query(Users).all()
+            users = db.query(Users).filter(Users.id != session_user.user_id).all()
             users_tup = [{'id': row.id, 'login': row.login, 'e_mail': row.e_mail, 'account_type': row.account_type} for row in users]
         return jsonify(users_tup)
     else:

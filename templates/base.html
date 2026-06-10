@@ -46,5 +46,10 @@
     <main class="container py-5">
         {% block content %}{% endblock %}
     </main>
+    <script>
+    function logout() {
+        window.location.assign("/logout");
+    };
+    </script>
 </body>
 </html>

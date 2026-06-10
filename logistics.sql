@@ -175,4 +175,4 @@ AFTER INSERT ON Routes
 FOR EACH ROW
 EXECUTE FUNCTION update_order_status_on_route();
 
-
+call clear_expired_sessions();
