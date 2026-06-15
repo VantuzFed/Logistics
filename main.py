@@ -1,11 +1,11 @@
-# Задание на учебную практику: разработать веб-приложение для
-# автоматизации безнес-процессов логистической компании
+# Выпускная квалификационная работа
+# Тема: «Разработка и администрирование
+# базы данных организации перевозок предприятия ООО «ФККГруп»»
 # Среда разработки: PyCharm
-# Дипломный проект
-# Название: Разработка веб-приложения
 # Разработал: Федюнин Иван Владиславович ТБД-82
 # Дата: 05.06.2026
 # Язык: Python
+# Файл маршрутов
 
 import os
 import string
@@ -164,25 +164,26 @@ def clients_api():
     if not session_user.user_id:
         return jsonify({'error': 'Требуется вход'})
 
-    with DB_Session() as db:
-        match request.method:
-            case 'GET':
-                clients = db.query(Clients).all()
-                return jsonify([{'id': c.id, 'first_name': c.first_name, 'last_name': c.last_name, 'e_mail': c.e_mail, 'phone_number': c.phone_number} for c in clients])
-            case 'POST':
-                data = request.json
-                new_client = Clients(first_name=data['first_name'], last_name=data['last_name'], e_mail=data['e_mail'], phone_number=data['phone_number'])
-                db.add(new_client)
-                db.commit()
-                return jsonify({'message': 'Client added', 'id': new_client.id})
-            case 'DELETE':
-                client_id = request.args.get('id')
-                client = db.query(Clients).filter(Clients.id == client_id).first()
-                if client:
-                    db.delete(client)
+    if session_user.acc_type =! 'Driver':
+        with DB_Session() as db:
+            match request.method:
+                case 'GET':
+                    clients = db.query(Clients).all()
+                    return jsonify([{'id': c.id, 'first_name': c.first_name, 'last_name': c.last_name, 'e_mail': c.e_mail, 'phone_number': c.phone_number} for c in clients])
+                case 'POST':
+                    data = request.json
+                    new_client = Clients(first_name=data['first_name'], last_name=data['last_name'], e_mail=data['e_mail'], phone_number=data['phone_number'])
+                    db.add(new_client)
                     db.commit()
-                    return jsonify({'message': 'Client deleted'})
-                return jsonify({'error': 'Client not found'}), 404
+                    return jsonify({'message': 'Client added', 'id': new_client.id})
+                case 'DELETE':
+                    client_id = request.args.get('id')
+                    client = db.query(Clients).filter(Clients.id == client_id).first()
+                    if client:
+                        db.delete(client)
+                        db.commit()
+                        return jsonify({'message': 'Client deleted'})
+                    return jsonify({'error': 'Client not found'}), 404
 
 @app.route('/api/clients/<int:client_id>', methods=['GET','PUT'])
 def clients_api_id(client_id):
@@ -190,22 +191,23 @@ def clients_api_id(client_id):
     if not session_user.user_id:
         return jsonify({'error': 'Требуется вход'})
 
-    with DB_Session() as db:
-        match request.method:
-            case 'GET':
-                client = db.query(Clients).filter(Clients.id == client_id).first()
-                if client:
-                    return jsonify({'id': client.id, 'first_name': client.first_name, 'last_name': client.last_name, 'e_mail': client.e_mail, 'phone_number': client.phone_number})
-            case 'PUT':
-                client = db.query(Clients).filter(Clients.id == client_id).first()
-                if client:
-                    data = request.json
-                    client.first_name = data.get('first_name', client.first_name)
-                    client.last_name = data.get('last_name', client.last_name)
-                    client.e_mail = data.get('e_mail', client.e_mail)
-                    client.phone_number = data.get('phone_number', client.phone_number)
-                    db.commit()
-                    return jsonify({'message': 'Client updated'})
+    if session_user.acc_type =! 'Driver':
+        with DB_Session() as db:
+            match request.method:
+                case 'GET':
+                    client = db.query(Clients).filter(Clients.id == client_id).first()
+                    if client:
+                        return jsonify({'id': client.id, 'first_name': client.first_name, 'last_name': client.last_name, 'e_mail': client.e_mail, 'phone_number': client.phone_number})
+                case 'PUT':
+                    client = db.query(Clients).filter(Clients.id == client_id).first()
+                    if client:
+                        data = request.json
+                        client.first_name = data.get('first_name', client.first_name)
+                        client.last_name = data.get('last_name', client.last_name)
+                        client.e_mail = data.get('e_mail', client.e_mail)
+                        client.phone_number = data.get('phone_number', client.phone_number)
+                        db.commit()
+                        return jsonify({'message': 'Client updated'})
 
         return jsonify({'error': 'Client not found'}), 404
 

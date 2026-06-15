@@ -25,7 +25,7 @@ document.getElementById("LogForm").addEventListener("submit", async function(eve
       const modalEl = document.getElementById('msgModal');
       modalEl.addEventListener('hidden.bs.modal', function () {
         window.location.href = "/";
-      }, { once: true }); // once: чтобы не дублировать
+      }, { once: true });
     } else {
       subBtn.disabled = false;
     }

@@ -54,7 +54,7 @@ CREATE TABLE Users (
     login VARCHAR(20) UNIQUE NOT NULL,
     e_mail VARCHAR(30) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    account_type VARCHAR(10) DEFAULT 'User' CHECK (account_type IN ('User', 'Admin'))
+    account_type VARCHAR(10) DEFAULT 'User' CHECK (account_type IN ('User', 'Admin', 'Manager', 'Dispatcher', 'Driver'))
 );
 
 CREATE TABLE Sessions (

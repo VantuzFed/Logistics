@@ -14,7 +14,7 @@ document.getElementById("RegForm").addEventListener("submit", async function(eve
 
   subBtn.disabled = true;
 
-  const regex = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{4,16}$/; // Фикс: убрал ненужные, запрет спецсимволов
+  const regex = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{4,16}$/;
 
   if (password_str !== password_check_str) {
     alert("Пароли не соответствуют друг другу.");
@@ -39,7 +39,6 @@ document.getElementById("RegForm").addEventListener("submit", async function(eve
     document.getElementById('response-modal').innerHTML = regData.message;
 
     if (regData.success) {
-      // Фикс: добавили .then для login
       await fetch(`/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
